@@ -1,0 +1,34 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:exclude build
+# gazelle:proto disable_global
+# gazelle:prefix github.com/example/project
+gazelle(name = "gazelle")
+
+gazelle(
+    name = "gazelle-update-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)
+
+go_binary(
+    name = "main",
+    embed = [":project_lib"],
+)
+
+go_library(
+    name = "project_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/example/project",
+    deps = [
+        "@com_google_cloud_go_spanner//:spanner",
+        "@org_golang_google_api//iterator",
+    ],
+)

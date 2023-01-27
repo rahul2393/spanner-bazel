@@ -10,7 +10,7 @@ import (
 
 func main() {
 	ctx := context.Background()
-	dbPath := "projects/my-project/instance/my-instance/databases/my-database"
+	dbPath := "projects/my-project/instances/my-instance/databases/my-database"
 	client, err := spanner.NewClient(ctx, dbPath)
 	if err != nil {
 		log.Fatal(err)
@@ -21,7 +21,7 @@ func main() {
 			`SELECT tableA.config_name, tableA.policy,
 					FROM tableA, tableB
 					WHERE tableA.config_name = tableB.config_name
-					AND tableB.owner = "name"
+					AND tableB.owner = "owner"
 					ORDER BY tableA.config_name ASC`,
 			map[string]interface{}{},
 		})
@@ -40,5 +40,6 @@ func main() {
 		if err := row.Columns(&configName, &policy); err != nil {
 			panic(err)
 		}
+		log.Printf("%v %v\n", configName, string(policy))
 	}
 }
